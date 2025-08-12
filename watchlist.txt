@@ -1,0 +1,3 @@
+# Pump.fun Coin Watchlist
+# Add one keyword per line
+
