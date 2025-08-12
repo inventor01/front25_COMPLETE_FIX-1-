@@ -1,0 +1,62 @@
+# Railway optimized Dockerfile - Alternative approach
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    g++ \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create requirements.txt directly in container if needed
+RUN echo "cachetools>=6.1.0" > requirements.txt && \
+    echo "aiohttp>=3.12.13" >> requirements.txt && \
+    echo "base58>=2.1.1" >> requirements.txt && \
+    echo "beautifulsoup4>=4.13.4" >> requirements.txt && \
+    echo "brotli>=1.1.0" >> requirements.txt && \
+    echo "cryptography>=45.0.5" >> requirements.txt && \
+    echo "discord-py>=2.5.2" >> requirements.txt && \
+    echo "discord-webhook>=1.4.1" >> requirements.txt && \
+    echo "flask>=3.1.1" >> requirements.txt && \
+    echo "fuzzywuzzy>=0.18.0" >> requirements.txt && \
+    echo "httpx>=0.28.1" >> requirements.txt && \
+    echo "lxml>=5.4.0" >> requirements.txt && \
+    echo "psutil>=7.0.0" >> requirements.txt && \
+    echo "psycopg2-binary>=2.9.10" >> requirements.txt && \
+    echo "pycryptodome>=3.23.0" >> requirements.txt && \
+    echo "pynacl>=1.5.0" >> requirements.txt && \
+    echo "python-levenshtein>=0.27.1" >> requirements.txt && \
+    echo "pyppeteer>=0.0.25" >> requirements.txt && \
+    echo "requests>=2.32.4" >> requirements.txt && \
+    echo "requests-html>=0.10.0" >> requirements.txt && \
+    echo "selenium>=4.34.2" >> requirements.txt && \
+    echo "solana>=0.36.7" >> requirements.txt && \
+    echo "solders>=0.26.0" >> requirements.txt && \
+    echo "trafilatura>=2.0.0" >> requirements.txt && \
+    echo "waitress>=3.0.2" >> requirements.txt && \
+    echo "webdriver-manager>=4.0.2" >> requirements.txt && \
+    echo "websocket>=0.2.1" >> requirements.txt && \
+    echo "websocket-client>=1.8.0" >> requirements.txt && \
+    echo "websockets>=15.0.1" >> requirements.txt
+
+# Install dependencies first
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY . .
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash app
+RUN chown -R app:app /app
+USER app
+
+# Expose port
+EXPOSE 5000
+
+# Start command
+CMD ["python", "fast_startup_server.py"]
